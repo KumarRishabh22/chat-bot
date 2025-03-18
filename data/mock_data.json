@@ -5,14 +5,38 @@
             "name": "Premium Headphones",
             "description": "High-quality wireless headphones with noise cancellation",
             "price": 199.99,
-            "stock": 50
+            "stock": 50,
+            "translations": [
+                {
+                    "language": "es-ES",
+                    "name": "Auriculares Premium",
+                    "description": "Auriculares inalámbricos de alta calidad con cancelación de ruido"
+                },
+                {
+                    "language": "fr-FR",
+                    "name": "Casque Premium",
+                    "description": "Casque sans fil de haute qualité avec réduction de bruit"
+                }
+            ]
         },
         {
             "id": 2,
             "name": "Smart Watch",
             "description": "Fitness tracking smartwatch with heart rate monitor",
             "price": 299.99,
-            "stock": 30
+            "stock": 30,
+            "translations": [
+                {
+                    "language": "es-ES",
+                    "name": "Reloj Inteligente",
+                    "description": "Reloj inteligente con monitor de actividad física y ritmo cardíaco"
+                },
+                {
+                    "language": "fr-FR",
+                    "name": "Montre Connectée",
+                    "description": "Montre connectée avec suivi de la condition physique et moniteur de fréquence cardiaque"
+                }
+            ]
         }
     ],
     "orders": [
@@ -22,7 +46,8 @@
             "customer_name": "John Doe",
             "status": "shipped",
             "created_at": "2024-01-15T10:00:00Z",
-            "estimated_delivery": "2024-01-20T10:00:00Z"
+            "estimated_delivery": "2024-01-20T10:00:00Z",
+            "language": "en-US"
         },
         {
             "id": 2,
@@ -30,7 +55,28 @@
             "customer_name": "Jane Smith",
             "status": "processing",
             "created_at": "2024-01-16T15:30:00Z",
-            "estimated_delivery": "2024-01-22T15:30:00Z"
+            "estimated_delivery": "2024-01-22T15:30:00Z",
+            "language": "es-ES"
+        }
+    ],
+    "supported_languages": [
+        {
+            "code": "en-US",
+            "name": "English (US)",
+            "voice_id": "21m00Tcm4TlvDq8ikWAM",
+            "active": true
+        },
+        {
+            "code": "es-ES",
+            "name": "Spanish (Spain)",
+            "voice_id": "EXAVITQu4vr4xnSDxMaL",
+            "active": true
+        },
+        {
+            "code": "fr-FR",
+            "name": "French (France)",
+            "voice_id": "MF3mGyEYCl7XYWbV9V6O",
+            "active": true
         }
     ]
 }
