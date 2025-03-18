@@ -1,6 +1,7 @@
 import os
 from twilio.rest import Client
 import logging
+import urllib.parse
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -14,10 +15,20 @@ def make_test_call(to_number):
             os.environ.get("TWILIO_AUTH_TOKEN")
         )
 
+        # Get the Replit URL from environment
+        replit_url = os.environ.get('REPL_SLUG', '')
+        webhook_url = f"https://{replit_url}.replit.dev/webhook/voice"
+
+        logger.info(f"Using webhook URL: {webhook_url}")
+
+        # Format the phone number with country code if not present
+        if not to_number.startswith('+'):
+            to_number = f"+91{to_number}"  # Add India country code
+
         # Create a call using the application's webhook
         call = client.calls.create(
-            url="http://0.0.0.0:5000/webhook/voice",  # Our application's webhook
-            to=to_number,  # The number to call
+            url=webhook_url,  # Use the public Replit URL
+            to=to_number,     # The number to call
             from_="+14632595522"  # Your Twilio number
         )
         logger.info(f"Call initiated! SID: {call.sid}")
@@ -27,18 +38,12 @@ def make_test_call(to_number):
         return None
 
 if __name__ == "__main__":
-    # Test different language scenarios
-    test_scenarios = [
-        {
-            "number": "+918271523471",  # Your test number
-            "description": "Testing English support"
-        }
-    ]
+    # Test call to your number
+    test_number = "8271523471"  # Will be formatted to +918271523471
+    logger.info(f"Making test call to: {test_number}")
+    call_sid = make_test_call(test_number)
 
-    for scenario in test_scenarios:
-        logger.info(f"Running test scenario: {scenario['description']}")
-        call_sid = make_test_call(scenario['number'])
-        if call_sid:
-            logger.info(f"Test call successful - SID: {call_sid}")
-        else:
-            logger.error("Test call failed")
+    if call_sid:
+        logger.info(f"Test call successful - SID: {call_sid}")
+    else:
+        logger.error("Test call failed")

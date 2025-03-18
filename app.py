@@ -37,16 +37,22 @@ def handle_incoming_call():
         caller_input = request.values.get('SpeechResult')
         call_sid = request.values.get('CallSid')
 
+        logger.info(f"Received call with SID: {call_sid}")
+        logger.info(f"Caller input: {caller_input}")
+
         if not caller_input:
             # Initial greeting for new calls
+            logger.info("Sending initial greeting")
             response = twilio_service.create_initial_greeting()
             return str(response)
 
         # Process speech input
         text_response = openai_service.process_query(caller_input)
+        logger.info(f"Generated response: {text_response}")
 
         # Convert response to speech
         audio_url = elevenlabs_service.text_to_speech(text_response)
+        logger.info(f"Generated audio URL: {audio_url}")
 
         # Create TwiML response with the audio
         response = twilio_service.create_voice_response(audio_url)
