@@ -33,15 +33,32 @@ def dashboard():
 @app.route('/webhook/voice', methods=['POST'])
 def handle_incoming_call():
     try:
-        # Get the caller's input
+        # Get both speech and DTMF input
         caller_input = request.values.get('SpeechResult')
+        dtmf_input = request.values.get('Digits')
         call_sid = request.values.get('CallSid')
 
         logger.info(f"Received call with SID: {call_sid}")
-        logger.info(f"Caller input: {caller_input}")
+        logger.info(f"Speech input: {caller_input}")
+        logger.info(f"DTMF input: {dtmf_input}")
 
-        if not caller_input:
-            # Initial greeting for new calls
+        # Handle DTMF input
+        if dtmf_input:
+            logger.info(f"Processing DTMF input: {dtmf_input}")
+            # Create a general response for keypad input
+            text_response = "Thank you for your input. You can now speak your question, and I'll be happy to help."
+            logger.info(f"Generated DTMF response: {text_response}")
+
+            # Convert response to speech
+            audio_url = elevenlabs_service.text_to_speech(text_response)
+            logger.info(f"Generated audio URL: {audio_url}")
+
+            # Create TwiML response
+            response = twilio_service.create_voice_response(audio_url)
+            return str(response)
+
+        # Handle initial call or no input
+        if not caller_input and not dtmf_input:
             logger.info("Sending initial greeting")
             response = twilio_service.create_initial_greeting()
             return str(response)
@@ -57,7 +74,7 @@ def handle_incoming_call():
         # Create TwiML response with the audio
         response = twilio_service.create_voice_response(audio_url)
 
-        logger.info(f"Processed call {call_sid} with input: {caller_input}")
+        logger.info(f"Processed call {call_sid} successfully")
         return str(response)
 
     except Exception as e:

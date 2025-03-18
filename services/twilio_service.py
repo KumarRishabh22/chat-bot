@@ -24,40 +24,46 @@ def create_initial_greeting():
         response.say("I apologize, but our voice service is currently unavailable. Please try again later.")
         response.hangup()
     else:
+        # Configure Gather for both speech and DTMF input
         gather = Gather(
-            input='speech',
+            input='dtmf speech',  # Accept both keypad and voice input
             action='/webhook/voice',
             language='en-US',
             speechTimeout='auto',
+            numDigits=1,  # Accept a single digit
+            timeout=3,     # Wait 3 seconds for DTMF input
             enhanced=True
         )
-        gather.say("Hello! Thank you for calling our customer support. How can I assist you today?")
+        gather.say("Hello! Thank you for calling our customer support. You can speak your question or press any key to continue.")
         response.append(gather)
 
         # Add a fallback if no input is received
-        response.say("I didn't catch that. Please try again.")
+        response.say("I didn't catch that. Please try speaking again or press any key.")
         response.redirect('/webhook/voice')
     return response
 
 def create_voice_response(audio_url):
     response = VoiceResponse()
     gather = Gather(
-        input='speech',
+        input='dtmf speech',  # Accept both keypad and voice input
         action='/webhook/voice',
         language='en-US',
         speechTimeout='auto',
+        numDigits=1,
+        timeout=3,
         enhanced=True
     )
 
     if not audio_url:
-        gather.say("I apologize, but I'm having trouble generating a response. Please try again.")
+        gather.say("I apologize, but I'm having trouble generating a response. Please speak again or press any key to continue.")
     else:
         gather.play(audio_url)
+        gather.say("Please speak your next question or press any key to continue.")
 
     response.append(gather)
 
     # Add a fallback if no input is received
-    response.say("I didn't catch that. Please try again.")
+    response.say("I didn't catch that. Please try speaking again or press any key.")
     response.redirect('/webhook/voice')
     return response
 
