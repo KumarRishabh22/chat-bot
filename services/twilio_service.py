@@ -1,5 +1,5 @@
 import os
-from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
 import logging
 
@@ -24,27 +24,41 @@ def create_initial_greeting():
         response.say("I apologize, but our voice service is currently unavailable. Please try again later.")
         response.hangup()
     else:
-        response.say("Hello! Thank you for calling our customer support. How can I assist you today?")
-        response.gather(
+        gather = Gather(
             input='speech',
             action='/webhook/voice',
             language='en-US',
-            speechTimeout='auto'
+            speechTimeout='auto',
+            enhanced=True
         )
+        gather.say("Hello! Thank you for calling our customer support. How can I assist you today?")
+        response.append(gather)
+
+        # Add a fallback if no input is received
+        response.say("I didn't catch that. Please try again.")
+        response.redirect('/webhook/voice')
     return response
 
 def create_voice_response(audio_url):
     response = VoiceResponse()
-    if not audio_url:
-        response.say("I apologize, but I'm having trouble generating a response. Please try again later.")
-    else:
-        response.play(audio_url)
-    response.gather(
+    gather = Gather(
         input='speech',
         action='/webhook/voice',
         language='en-US',
-        speechTimeout='auto'
+        speechTimeout='auto',
+        enhanced=True
     )
+
+    if not audio_url:
+        gather.say("I apologize, but I'm having trouble generating a response. Please try again.")
+    else:
+        gather.play(audio_url)
+
+    response.append(gather)
+
+    # Add a fallback if no input is received
+    response.say("I didn't catch that. Please try again.")
+    response.redirect('/webhook/voice')
     return response
 
 def create_error_response():
@@ -61,8 +75,8 @@ def get_call_logs():
         calls = client.calls.list(limit=50)
         return [{
             'call_sid': call.sid,
-            'from': call.from_,
-            'to': call.to,
+            'from': call.from_formatted,
+            'to': call.to_formatted,
             'duration': call.duration,
             'status': call.status,
             'start_time': call.start_time.isoformat() if call.start_time else None
