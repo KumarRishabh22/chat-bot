@@ -15,15 +15,15 @@ def make_test_call(to_number):
             os.environ.get("TWILIO_AUTH_TOKEN")
         )
 
-        # Get the Replit URL from environment
-        replit_url = os.environ.get('REPL_SLUG', '')
-        webhook_url = f"https://{replit_url}.replit.dev/webhook/voice"
-
+        # Use the correct webhook URL format
+        webhook_url = "https://sale10x22.replit.dev/webhook/voice"
         logger.info(f"Using webhook URL: {webhook_url}")
 
         # Format the phone number with country code if not present
         if not to_number.startswith('+'):
             to_number = f"+91{to_number}"  # Add India country code
+
+        logger.info(f"Making test call to: {to_number}")
 
         # Create a call using the application's webhook
         call = client.calls.create(
